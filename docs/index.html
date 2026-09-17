@@ -7435,14 +7435,27 @@ function setupStaggerLists() {
   });
 }
 
-// Wrap showSection for transitions
-var _origShow = showSection;
+// Wrap showSection for smooth transitions
+var _showForTransition = showSection;
 showSection = function(id) {
-  var cur = document.querySelector('article[style*="display: block"],article[style*="display:block"]');
-  if (cur && cur.id !== id) {
-    cur.style.opacity = '0';
-    setTimeout(function() { _origShow(id); var ns=document.getElementById(id); if(ns){ns.style.opacity='0';setTimeout(function(){ns.style.opacity='1';},50);} }, 200);
-  } else { _origShow(id); }
+  var allSections = document.querySelectorAll('article.content-section');
+  var current = null;
+  allSections.forEach(function(s) { if (s.style.display !== 'none') current = s; });
+  if (current && current.id !== id) {
+    current.style.transition = 'opacity 0.2s';
+    current.style.opacity = '0';
+    setTimeout(function() {
+      _showForTransition(id);
+      var ns = document.getElementById(id);
+      if (ns) {
+        ns.style.opacity = '0';
+        ns.style.transition = 'opacity 0.3s';
+        setTimeout(function() { ns.style.opacity = '1'; }, 50);
+      }
+    }, 200);
+  } else {
+    _showForTransition(id);
+  }
 };
 
 function initTier2and3() {
