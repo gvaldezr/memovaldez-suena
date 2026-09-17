@@ -2,6 +2,11 @@
 <html lang="es" data-theme="light">
 <head>
 <meta charset="UTF-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Suena">
+<meta name="theme-color" content="#E8614D">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Suena%20%E2%80%94%20Tu%20Espacio%20Musical%22%2C%22short_name%22%3A%22Suena%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%23E8614D%22%2C%22background_color%22%3A%22%23FAFAF8%22%7D">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Suena — Tu Espacio Musical</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -741,6 +746,49 @@ img { max-width:100%; height:auto; display:block; }
 .door-card:nth-child(1) { opacity:0; animation: heroCardStagger 0.5s ease 0.6s forwards; }
 .door-card:nth-child(2) { opacity:0; animation: heroCardStagger 0.5s ease 0.8s forwards; }
 .door-card:nth-child(3) { opacity:0; animation: heroCardStagger 0.5s ease 1.0s forwards; }
+
+/* TIER 2+3 v2.3 */
+.level-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.level-modal { background:var(--color-surface,#fff); border-radius:var(--radius-xl,16px); padding:var(--space-8,32px); max-width:500px; width:90%; text-align:center; box-shadow:var(--shadow-xl,0 20px 60px rgba(0,0,0,0.3)); animation:heroFadeScale 0.4s ease; }
+.level-modal h2 { font-family:var(--font-heading,'Nunito',sans-serif); color:var(--color-primary,#E8614D); margin-bottom:var(--space-2,8px); }
+.level-modal p { color:var(--color-text-secondary,#6B7785); margin-bottom:var(--space-6,24px); }
+.level-cards { display:flex; flex-direction:column; gap:var(--space-3,12px); }
+.level-card { padding:var(--space-4,16px); border-radius:var(--radius-lg,12px); border:2px solid var(--color-border,#E8E8E8); cursor:pointer; transition:all 0.2s; text-align:left; }
+.level-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); }
+.level-card-principiante:hover { border-color:var(--color-accent,#2EC4A0); background:var(--color-accent-light,#E6F9F4); }
+.level-card-intermedio:hover { border-color:var(--color-secondary,#2D3A4A); background:rgba(45,58,74,0.05); }
+.level-card-avanzado:hover { border-color:#7C5CFC; background:#EDE8FD; }
+.level-card-title { font-weight:700; font-size:1.1em; margin-bottom:4px; }
+.level-card-desc { font-size:0.85em; color:var(--color-text-secondary); }
+body[data-level="principiante"] .accordion-advanced { display:none !important; }
+body[data-level="principiante"] .callout-prueba { border-width:3px; animation:subtlePulse 2s infinite; }
+body[data-level="avanzado"] .accordion-advanced > .accordion-header { background:var(--color-accent-light,#E6F9F4); }
+@keyframes subtlePulse { 0%,100% { box-shadow:0 0 0 0 rgba(46,196,160,0); } 50% { box-shadow:0 0 0 4px rgba(46,196,160,0.2); } }
+.section-nav { display:flex; justify-content:space-between; align-items:center; margin-top:var(--space-10,40px); padding-top:var(--space-6,24px); border-top:2px solid var(--color-border,#E8E8E8); gap:var(--space-4,16px); }
+.section-nav a { padding:var(--space-3,12px) var(--space-5,20px); border:2px solid var(--color-border,#E8E8E8); border-radius:var(--radius-lg,12px); color:var(--color-text-primary); text-decoration:none; cursor:pointer; transition:all 0.2s; font-weight:500; flex:1; text-align:center; }
+.section-nav a:hover { border-color:var(--color-primary,#E8614D); color:var(--color-primary); background:var(--color-primary-light,#FCEAE7); }
+.section-nav .nav-spacer { flex:1; }
+@media (max-width:480px) { .section-nav { flex-direction:column; } .section-nav a { width:100%; } }
+.breadcrumb { font-size:0.8em; color:var(--color-text-muted,#999); margin-bottom:var(--space-4,16px); padding:var(--space-2,8px) 0; }
+.breadcrumb a { color:var(--color-text-secondary,#6B7785); text-decoration:none; cursor:pointer; }
+.breadcrumb a:hover { color:var(--color-primary,#E8614D); }
+.breadcrumb .sep { margin:0 var(--space-1,4px); opacity:0.5; }
+.media-placeholder { background:linear-gradient(135deg,var(--color-surface,#f5f5f5),var(--color-border-light,#eee)); border-radius:var(--radius-lg,12px); padding:var(--space-8,32px); text-align:center; margin:var(--space-4,16px) 0; border:2px dashed var(--color-border,#E8E8E8); }
+.media-placeholder .play-icon { width:60px; height:60px; border-radius:50%; background:var(--color-primary,#E8614D); color:white; display:inline-flex; align-items:center; justify-content:center; font-size:1.5em; margin-bottom:var(--space-3,12px); }
+.media-placeholder .coming-soon { font-size:0.85em; color:var(--color-text-muted,#999); margin-top:var(--space-2,8px); }
+.content-section { transition:opacity 0.3s ease; }
+.content-section.fading-out { opacity:0; }
+.content-section.fading-in { animation:fadeSlideIn 0.4s ease forwards; }
+.stagger-list li { opacity:0; transform:translateY(10px); animation:staggerIn 0.3s ease forwards; }
+@keyframes staggerIn { to { opacity:1; transform:translateY(0); } }
+.change-level-btn { display:block; width:100%; padding:var(--space-2,8px); background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:rgba(255,255,255,0.7); border-radius:var(--radius-md,8px); cursor:pointer; font-size:0.8em; margin-top:var(--space-2,8px); transition:all 0.2s; }
+.change-level-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+[data-theme="dark"] .level-modal { background:var(--color-surface,#242B35); }
+[data-theme="dark"] .level-card { border-color:var(--color-border,#3A4450); }
+[data-theme="dark"] .media-placeholder { background:linear-gradient(135deg,var(--color-surface,#242B35),var(--color-surface-elevated,#2D3540)); border-color:var(--color-border,#3A4450); }
+[data-theme="dark"] .section-nav a { border-color:var(--color-border,#3A4450); color:var(--color-text-primary,#EAEAEA); }
+[data-theme="dark"] .section-nav a:hover { border-color:var(--color-primary); background:rgba(240,122,104,0.1); }
+
 </style>
 </head>
 <body>
@@ -7314,6 +7362,97 @@ activateHeroAnimation();
 activateDoorCards();
 enhanceAria();
 makeNavCollapsible();
+
+
+
+// TIER 2+3 v2.3
+var sectionMeta = [["inicio", "Inicio", null], ["fundamentos-pulso", "El Pulso", "Fundamentos"], ["fundamentos-ritmo", "Ritmo", "Fundamentos"], ["fundamentos-melodia", "Melod\u00eda", "Fundamentos"], ["fundamentos-lectura", "Lectura Musical", "Fundamentos"], ["voz-tecnica", "T\u00e9cnica Vocal", "Nuestra Voz"], ["voz-adolescente", "Voz Adolescente", "Nuestra Voz"], ["voz-coro", "Cantar en Coro", "Nuestra Voz"], ["instrumento-guitarra", "Guitarra", "Instrumentos"], ["instrumento-piano", "Piano", "Instrumentos"], ["instrumento-bajo", "Bajo", "Instrumentos"], ["instrumento-percusion", "Percusi\u00f3n", "Instrumentos"], ["ensamble", "Ensamble", "Ensamble"], ["armonia-acordes", "Acordes", "Armon\u00eda"], ["armonia-progresiones", "Progresiones", "Armon\u00eda"], ["armonia-arreglos", "Arreglos", "Armon\u00eda"], ["creatividad-improvisacion", "Improvisaci\u00f3n", "Creatividad"], ["creatividad-composicion", "Composici\u00f3n", "Creatividad"], ["creatividad-fusion", "Fusi\u00f3n", "Creatividad"], ["formato-perfil", "Mi Perfil", "Formatos"], ["formato-autoeval1", "Autoeval. Breve", "Formatos"], ["formato-autoeval2", "Autoeval. Completa", "Formatos"], ["formato-coeval-ensayo", "Coeval. Ensayo", "Formatos"], ["formato-coeval-pres", "Coeval. Presentaci\u00f3n", "Formatos"], ["formato-bitacora", "Bit\u00e1cora", "Formatos"], ["recursos-herramientas", "Herramientas", "Recursos"], ["recursos-presentaciones", "Presentaciones", "Recursos"], ["glosario", "Glosario", "Glosario"]];
+var sectionOrder = sectionMeta.map(function(s) { return s[0]; });
+
+function showLevelModal() {
+  if (document.getElementById('levelModal')) return;
+  var o = document.createElement('div');
+  o.className = 'level-modal-overlay'; o.id = 'levelModal';
+  o.innerHTML = '<div class="level-modal"><h2>🎵 ¿Cuál es tu nivel?</h2><p>Esto personaliza tu experiencia. Puedes cambiarlo cuando quieras.</p><div class="level-cards">' +
+    '<div class="level-card level-card-principiante" onclick="setLevel(\'principiante\')"><div class="level-card-title">🌱 Empiezo aquí</div><div class="level-card-desc">Nunca he tocado un instrumento. Muéstrame lo básico.</div></div>' +
+    '<div class="level-card level-card-intermedio" onclick="setLevel(\'intermedio\')"><div class="level-card-title">🎸 Ya sé algo</div><div class="level-card-desc">Toco de oído o con tutoriales. Quiero ver todo.</div></div>' +
+    '<div class="level-card level-card-avanzado" onclick="setLevel(\'avanzado\')"><div class="level-card-title">🎼 Quiero más</div><div class="level-card-desc">Tengo formación musical. Llévame a lo avanzado.</div></div>' +
+    '</div></div>';
+  document.body.appendChild(o);
+}
+
+function setLevel(level) {
+  try { localStorage.setItem('suena-nivel', level); } catch(e) {}
+  document.body.setAttribute('data-level', level);
+  var m = document.getElementById('levelModal'); if (m) m.remove();
+  document.querySelectorAll('.accordion-header').forEach(function(h) {
+    if (h.textContent.indexOf('🚀') >= 0 || h.textContent.toLowerCase().indexOf('para los que quieren') >= 0)
+      h.parentElement.classList.add('accordion-advanced');
+  });
+  var btn = document.querySelector('.change-level-btn');
+  if (btn) btn.textContent = 'Nivel: ' + ({principiante:'🌱 Principiante',intermedio:'🎸 Intermedio',avanzado:'🎼 Avanzado'}[level] || level);
+}
+
+function addPrevNext() {
+  sectionMeta.forEach(function(meta, i) {
+    var id=meta[0], article=document.getElementById(id);
+    if (!article || id==='inicio') return;
+    var inner=article.querySelector('.content-inner')||article;
+    if (inner.querySelector('.section-nav')) return;
+    var nav=document.createElement('div'); nav.className='section-nav';
+    var prev='', next='';
+    if (i>1) { var p=sectionMeta[i-1]; prev='<a onclick="showSection(\''+p[0]+'\')">← '+p[1]+'</a>'; }
+    else prev='<div class="nav-spacer"></div>';
+    if (i<sectionMeta.length-1) { var n=sectionMeta[i+1]; next='<a onclick="showSection(\''+n[0]+'\')">'+n[1]+' →</a>'; }
+    else next='<div class="nav-spacer"></div>';
+    nav.innerHTML=prev+next; inner.appendChild(nav);
+  });
+}
+
+function addBreadcrumbs() {
+  sectionMeta.forEach(function(meta) {
+    var id=meta[0],name=meta[1],group=meta[2];
+    if (!group) return;
+    var article=document.getElementById(id); if (!article) return;
+    var inner=article.querySelector('.content-inner')||article;
+    if (inner.querySelector('.breadcrumb')) return;
+    var bc=document.createElement('div'); bc.className='breadcrumb';
+    bc.innerHTML='<a onclick="showSection(\'inicio\')">Inicio</a><span class="sep">›</span><a>'+group+'</a><span class="sep">›</span><span>'+name+'</span>';
+    inner.insertBefore(bc, inner.firstChild);
+  });
+}
+
+function setupStaggerLists() {
+  var obs=new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        var items=e.target.querySelectorAll('li'), c=Math.min(items.length,10);
+        for (var i=0;i<c;i++) items[i].style.animationDelay=(i*50)+'ms';
+        e.target.classList.add('stagger-list'); obs.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.1});
+  document.querySelectorAll('.content-inner ul,.content-inner ol').forEach(function(l) {
+    if (l.children.length<=15) obs.observe(l);
+  });
+}
+
+// Wrap showSection for transitions
+var _origShow = showSection;
+showSection = function(id) {
+  var cur = document.querySelector('article[style*="display: block"],article[style*="display:block"]');
+  if (cur && cur.id !== id) {
+    cur.style.opacity = '0';
+    setTimeout(function() { _origShow(id); var ns=document.getElementById(id); if(ns){ns.style.opacity='0';setTimeout(function(){ns.style.opacity='1';},50);} }, 200);
+  } else { _origShow(id); }
+};
+
+function initTier2and3() {
+  addBreadcrumbs(); addPrevNext(); setupStaggerLists();
+  var saved=null; try{saved=localStorage.getItem('suena-nivel');}catch(e){}
+  if (saved) setLevel(saved); else setTimeout(showLevelModal, 1500);
+}
+setTimeout(initTier2and3, 200);
 
 </script>
 </body>
