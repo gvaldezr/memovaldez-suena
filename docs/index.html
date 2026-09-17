@@ -7296,10 +7296,8 @@ function makeNavCollapsible() {
     if (!label) return;
     var items = group.querySelectorAll('.nav-item.sub');
     if (items.length === 0) return;
-    var ind = document.createElement('span');
-    ind.textContent = ' \u25be';
-    ind.style.cssText = 'float:right;transition:transform var(--transition-fast);display:inline-block;';
-    label.appendChild(ind);
+    var ind = label.querySelector('.nav-chevron');
+    if (!ind) { ind = document.createElement('span'); ind.textContent = '\u25be'; ind.className = 'nav-chevron'; label.appendChild(ind); }
     label.style.cursor = 'pointer';
     label.style.userSelect = 'none';
     label.setAttribute('aria-expanded','true');
