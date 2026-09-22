@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Suena Jeopardy — Taller de Música</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral: #E8614D;
+  --blue: #2D3A4A;
+  --mint: #2EC4A0;
+  --gold: #FFB627;
+  --purple: #7C5CFC;
+  --pink: #FF2D78;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 30px 20px 20px;
+}
+.header h1 {
+  font-size: 2.8em;
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--coral), var(--gold), var(--mint));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+}
+.header p { opacity: 0.6; font-size: 1em; margin-top: 4px; }
+
+/* SCOREBOARD */
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px 20px 20px;
+  flex-wrap: wrap;
+}
+.team {
+  text-align: center;
+  min-width: 150px;
+}
+.team-name {
+  font-weight: 800;
+  font-size: 1.1em;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.team-name:hover { border-color: rgba(255,255,255,0.5); }
+.team-score {
+  font-size: 2.5em;
+  font-weight: 900;
+  margin-top: 4px;
+}
+.team:nth-child(1) .team-score { color: var(--coral); }
+.team:nth-child(2) .team-score { color: var(--mint); }
+.team:nth-child(3) .team-score { color: var(--gold); }
+.team:nth-child(4) .team-score { color: var(--purple); }
+.score-btns { margin-top: 6px; display: flex; gap: 6px; justify-content: center; }
+.score-btns button {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1em;
+  transition: all 0.2s;
+}
+.score-btns button:hover { background: rgba(255,255,255,0.25); transform: scale(1.1); }
+
+/* BOARD */
+.board {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 10px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.category {
+  background: linear-gradient(180deg, var(--blue), #1a2536);
+  padding: 14px 8px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.85em;
+  border-radius: 10px 10px 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 3px solid;
+}
+.category:nth-child(1) { border-color: var(--coral); }
+.category:nth-child(2) { border-color: var(--mint); }
+.category:nth-child(3) { border-color: var(--gold); }
+.category:nth-child(4) { border-color: var(--purple); }
+.category:nth-child(5) { border-color: var(--pink); }
+.category:nth-child(6) { border-color: var(--coral); }
+
+.cell {
+  background: linear-gradient(180deg, #1a2040, #0f1525);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 18px 8px;
+  text-align: center;
+  font-size: 1.6em;
+  font-weight: 900;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.3s;
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cell:hover { background: linear-gradient(180deg, #2a3060, #1a2040); transform: scale(1.05); box-shadow: 0 4px 20px rgba(255,180,40,0.2); }
+.cell.used { opacity: 0.15; cursor: default; pointer-events: none; }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: linear-gradient(135deg, #1a1a3e, #0a0a2a);
+  border: 2px solid;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes modalIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-cat { font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; margin-bottom: 8px; }
+.modal-points { font-size: 3em; font-weight: 900; margin-bottom: 16px; }
+.modal-question { font-size: 1.4em; line-height: 1.5; margin-bottom: 24px; font-weight: 600; }
+.modal-answer {
+  display: none;
+  font-size: 1.3em;
+  font-weight: 800;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  animation: answerReveal 0.5s ease;
+}
+@keyframes answerReveal { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.modal-answer.visible { display: block; }
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 4px;
+  transition: all 0.2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-reveal { background: var(--gold); color: #000; }
+.btn-close { background: rgba(255,255,255,0.15); color: #fff; }
+.btn-correct { background: var(--mint); color: #000; }
+.btn-wrong { background: var(--coral); color: #fff; }
+
+/* CONFETTI */
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  z-index: 2000;
+  pointer-events: none;
+  animation: confettiFall 2s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.8em; }
+  .board { grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 10px; }
+  .category { font-size: 0.7em; padding: 10px 6px; min-height: 50px; }
+  .cell { font-size: 1.2em; min-height: 50px; padding: 12px 6px; }
+  .modal { padding: 24px; }
+  .modal-question { font-size: 1.1em; }
+}
+
+/* FINAL ROUND */
+.final-round {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+.final-round.active { display: block; }
+.final-round h2 { font-size: 2.5em; color: var(--gold); margin-bottom: 20px; }
+.final-category { font-size: 1.5em; color: var(--coral); margin: 20px 0; font-weight: 700; }
+.final-question { font-size: 1.3em; line-height: 1.6; max-width: 700px; margin: 20px auto; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🎵 SUENA JEOPARDY 🎵</h1>
+  <p>Taller de Música · Bachillerato UADY</p>
+</div>
+
+<div class="scoreboard" id="scoreboard">
+  <div class="team">
+    <div class="team-name" onclick="renameTeam(0)">🎸 Equipo 1</div>
+    <div class="team-score" id="score-0">0</div>
+    <div class="score-btns">
+      <button onclick="adjustScore(0, -100)">−</button>
+      <button onclick="adjustScore(0, 100)">+</button>
+    </div>
+  </div>
+  <div class="team">
+    <div class="team-name" onclick="renameTeam(1)">🎤 Equipo 2</div>
+    <div class="team-score" id="score-1">0</div>
+    <div class="score-btns">
+      <button onclick="adjustScore(1, -100)">−</button>
+      <button onclick="adjustScore(1, 100)">+</button>
+    </div>
+  </div>
+  <div class="team">
+    <div class="team-name" onclick="renameTeam(2)">🥁 Equipo 3</div>
+    <div class="team-score" id="score-2">0</div>
+    <div class="score-btns">
+      <button onclick="adjustScore(2, -100)">−</button>
+      <button onclick="adjustScore(2, 100)">+</button>
+    </div>
+  </div>
+  <div class="team">
+    <div class="team-name" onclick="renameTeam(3)">🎹 Equipo 4</div>
+    <div class="team-score" id="score-3">0</div>
+    <div class="score-btns">
+      <button onclick="adjustScore(3, -100)">−</button>
+      <button onclick="adjustScore(3, 100)">+</button>
+    </div>
+  </div>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-cat" id="modalCat"></div>
+    <div class="modal-points" id="modalPoints"></div>
+    <div class="modal-question" id="modalQuestion"></div>
+    <div class="modal-answer" id="modalAnswer"></div>
+    <div id="modalBtns">
+      <button class="btn btn-reveal" onclick="revealAnswer()">🎵 Revelar Respuesta</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// GAME DATA — Based on Suena content
+// ==========================================
+var categories = [
+  "🎵 Ritmo y Pulso",
+  "🎤 Nuestra Voz",
+  "🎸 Instrumentos",
+  "🎶 Armonía",
+  "✨ Creatividad",
+  "🧠 Datos Curiosos"
+];
+
+var catColors = ['#E8614D', '#2EC4A0', '#FFB627', '#7C5CFC', '#FF2D78', '#E8614D'];
+
+var questions = {
+  "🎵 Ritmo y Pulso": [
+    {
+      points: 100,
+      q: "Es el latido constante de la música — como el tic-tac de un reloj. ¿Qué es?",
+      a: "¿Qué es el PULSO? 💓 Es lo que te hace mover el pie automáticamente cuando escuchas tu canción favorita."
+    },
+    {
+      points: 200,
+      q: "En sílabas Kodály, ¿cómo se dice una negra y dos corcheas?",
+      a: "¿Qué es TA y TI-TI? 🥁 La negra = TA (un golpe largo), las corcheas = TI-TI (dos golpes cortos en el mismo tiempo)."
+    },
+    {
+      points: 300,
+      q: "¿Cuál es la diferencia entre PULSO y RITMO?",
+      a: "El pulso es el latido CONSTANTE (no cambia), el ritmo son los PATRONES de sonidos largos, cortos y silencios que van ENCIMA del pulso. 🎶"
+    },
+    {
+      points: 400,
+      q: "Si una canción está a 120 BPM, ¿cuántos pulsos hay por segundo?",
+      a: "¿Qué es 2 pulsos por segundo? ⏱️ BPM = beats per minute. 120 ÷ 60 segundos = 2 por segundo."
+    },
+    {
+      points: 500,
+      q: "La sílaba Kodály para el silencio de negra es SH. ¿Por qué Debussy dijo que 'la música es el espacio entre las notas'?",
+      a: "Porque el SILENCIO es tan importante como el sonido. 🤫 Sin silencios, la música sería solo ruido constante. El silencio crea tensión, expectativa y respiración."
+    }
+  ],
+  "🎤 Nuestra Voz": [
+    {
+      points: 100,
+      q: "¿Cómo se llama el músculo que usamos para respirar correctamente al cantar?",
+      a: "¿Qué es el DIAFRAGMA? 🫁 Es el músculo debajo de los pulmones que controla la respiración. Respirar 'con la panza' = respiración diafragmática."
+    },
+    {
+      points: 200,
+      q: "Cuando un grupo canta una canción TODOS en las mismas notas al mismo tiempo, ¿cómo se llama?",
+      a: "¿Qué es cantar al UNÍSONO? 🎤 Uni = uno, sono = sonido. Todas las voces cantan la misma melodía."
+    },
+    {
+      points: 300,
+      q: "Durante la adolescencia, la voz cambia porque las cuerdas vocales crecen. ¿Cómo se llama este proceso?",
+      a: "¿Qué es la MUDA DE VOZ? 🔄 En los hombres la voz baja hasta una octava; en las mujeres el cambio es más sutil. Es 100% normal y NO significa que cantas mal."
+    },
+    {
+      points: 400,
+      q: "¿Qué es un CANON y puedes dar un ejemplo famoso?",
+      a: "Un canon es cuando el mismo grupo canta la MISMA melodía, pero empezando en DIFERENTES momentos. 🔁 Ejemplo: 'Frère Jacques' (Martinillo). Un grupo empieza y el otro entra unos compases después."
+    },
+    {
+      points: 500,
+      q: "Científicamente, ¿qué hormona libera el cuerpo cuando cantas en coro con otras personas?",
+      a: "¿Qué es la OXITOCINA? 🧬 Cantar juntos libera oxitocina (la 'hormona del vínculo'), sincroniza los latidos cardíacos del grupo, y reduce el cortisol (estrés). ¡La ciencia explica por qué se siente tan bien!"
+    }
+  ],
+  "🎸 Instrumentos": [
+    {
+      points: 100,
+      q: "Las cuerdas de la guitarra estándar se afinan en estas 6 notas (de grave a aguda). ¿Cuáles son?",
+      a: "¿Qué es MI-LA-RE-SOL-SI-MI (E-A-D-G-B-E)? 🎸 Truco para recordar: 'Eduardo Ama Dar Guitarra Buena y Espléndida'."
+    },
+    {
+      points: 200,
+      q: "En el piano, las teclas negras se agrupan en patrones de 2 y 3. ¿Cómo usas ese patrón para encontrar la nota DO?",
+      a: "DO siempre está justo A LA IZQUIERDA del grupo de 2 teclas negras. 🎹 Es tu punto de referencia — una vez que lo encuentras, cuentas las demás."
+    },
+    {
+      points: 300,
+      q: "¿Qué instrumento se considera 'el corazón del ensamble' porque mantiene el ritmo Y conecta la armonía con el ritmo?",
+      a: "¿Qué es el BAJO? 🎸 El bajo es el puente entre la sección rítmica (batería/percusión) y la armónica (guitarra/piano). Si el bajo falla, todo el ensamble se desmorona."
+    },
+    {
+      points: 400,
+      q: "Nombra 3 instrumentos de percusión latina que tenemos en el aula del taller.",
+      a: "¿Qué son los BONGÓS, el CAJÓN y las CLAVES? 🥁 También: maracas, güiro, congas, y percusiones menores. La percusión latina tiene el patrón de CLAVE 3-2 como base."
+    },
+    {
+      points: 500,
+      q: "¿Qué es la 'percusión corporal' y nombra los 5 sonidos básicos que puedes hacer con tu cuerpo?",
+      a: "Es hacer ritmo usando tu propio cuerpo como instrumento. 👏 Los 5 sonidos: PALMAS (clap), MUSLOS (slap), PECHO (thump), PIES (stomp), CHASQUIDOS (snap). ¡No necesitas instrumento para hacer música!"
+    }
+  ],
+  "🎶 Armonía": [
+    {
+      points: 100,
+      q: "Un acorde es cuando tocan 3 o más notas al mismo tiempo. ¿Cuál es la diferencia entre un acorde MAYOR y uno MENOR?",
+      a: "El mayor suena 'ALEGRE' o 'brillante', el menor suena 'TRISTE' o 'melancólico'. 🎵 Técnicamente, la diferencia es una sola nota: la tercera es medio tono más baja en el menor."
+    },
+    {
+      points: 200,
+      q: "Hay 4 acordes con los que puedes tocar CIENTOS de canciones pop. ¿Cuáles son en la tonalidad de Do?",
+      a: "¿Qué son DO, SOL, LA menor y FA (C-G-Am-F)? 🏆 La progresión I-V-vi-IV. La usan: 'Someone Like You', 'Let It Be', 'Nada' de Zoé, y literalmente cientos más."
+    },
+    {
+      points: 300,
+      q: "¿Qué es una PROGRESIÓN ARMÓNICA? Usa la analogía del tren.",
+      a: "Si los acordes son las ESTACIONES, la progresión es la RUTA DEL TREN. 🚂 Siempre pasa por las mismas estaciones en el mismo orden, una y otra vez — y cada ruta te lleva a un lugar emocional diferente."
+    },
+    {
+      points: 400,
+      q: "¿Cuáles son las 3 funciones tonales básicas y qué 'sentimiento' da cada una?",
+      a: "TÓNICA (I) = casa, descanso, estabilidad. SUBDOMINANTE (IV) = movimiento, 'quiero ir a algún lado'. DOMINANTE (V) = tensión, 'necesito volver a casa'. 🏠➡️🌊➡️⚡➡️🏠"
+    },
+    {
+      points: 500,
+      q: "¿Qué es un ARREGLO musical y cuáles son las 6 preguntas que un arreglista se hace?",
+      a: "Un arreglo es decidir CÓMO suena una canción con TU grupo. 🎼 Las 6 preguntas: ¿Qué TONALIDAD? ¿Quién canta la MELODÍA? ¿Quién hace la ARMONÍA? ¿Qué RITMO? ¿Qué INSTRUMENTOS? ¿Qué DINÁMICAS?"
+    }
+  ],
+  "✨ Creatividad": [
+    {
+      points: 100,
+      q: "¿Qué escala tiene solo 5 notas y es perfecta para improvisar porque 'siempre suena bien'?",
+      a: "¿Qué es la escala PENTATÓNICA? 🌟 Solo 5 notas (en Do: DO-RE-MI-SOL-LA). Es como el 'WiFi de la música' — funciona en casi cualquier contexto."
+    },
+    {
+      points: 200,
+      q: "En improvisación, ¿qué es el 'call & response' (llamada y respuesta)?",
+      a: "Una persona toca/canta una frase musical (LLAMADA) y otra persona RESPONDE con otra frase. 📞 Es como una conversación musical. Es la base del jazz, blues, y muchas tradiciones africanas y latinas."
+    },
+    {
+      points: 300,
+      q: "La 'Receta de Canción' tiene 6 pasos. Nombra al menos 4.",
+      a: "1. Elige una EMOCIÓN o historia. 2. Escribe FRASES/ideas. 3. Elige una PROGRESIÓN armónica. 4. Tararea una MELODÍA sobre los acordes. 5. Ajusta las PALABRAS a la melodía. 6. Dale ESTRUCTURA (verso-coro-puente). 📝"
+    },
+    {
+      points: 400,
+      q: "Nombra 2 artistas mexicanos que son ejemplos de FUSIÓN DE GÉNEROS y explica qué fusionan.",
+      a: "CAFÉ TACVBA: rock + son jarocho + electrónica + punk. NATALIA LAFOURCADE: indie pop + música tradicional mexicana (son jarocho, boleros). 🇲🇽 También Rosalía (flamenco + electrónica) o Peso Pluma (regional + urbano)."
+    },
+    {
+      points: 500,
+      q: "¿Qué es el SCAT SINGING y quiénes son 3 maestros legendarios de esta técnica?",
+      a: "Scat es improvisar vocalmente usando SÍLABAS sin significado en lugar de palabras (du-bi-du-ba-da-ski-bi...). 🎤 Maestros: ELLA FITZGERALD, LOUIS ARMSTRONG y BOBBY McFERRIN (el de 'Don't Worry Be Happy')."
+    }
+  ],
+  "🧠 Datos Curiosos": [
+    {
+      points: 100,
+      q: "¿Cuántas notas básicas existen en TODA la música del mundo? (Pista: son menos de las que crees)",
+      a: "¿Qué son SOLO 12? 🤯 7 naturales (Do Re Mi Fa Sol La Si) + 5 alteradas (sostenidos/bemoles). Toda la música que existe — de Bach a Bad Bunny — usa solo estas 12 notas."
+    },
+    {
+      points: 200,
+      q: "En Yucatán existe una tradición musical donde alguien grita una copla rimada en medio de la canción. ¿Cómo se llama?",
+      a: "¿Qué es la BOMBA yucateca? 💣 Es una décima humorística que se grita durante la jarana. Ejemplo: '¡Bomba! En Mérida yo nací, cantando me bauticé, y con música crecí, y con música me iré!'"
+    },
+    {
+      points: 300,
+      q: "La propiedad matemática de la música que hace que el intervalo de 5ta justa suene 'perfecto' se basa en una proporción. ¿Cuál es?",
+      a: "¿Qué es la proporción 3:2? 📐 La frecuencia de la 5ta justa es exactamente 1.5 veces la frecuencia de la nota base. Pitágoras descubrió esto hace 2,500 años con cuerdas."
+    },
+    {
+      points: 400,
+      q: "¿Por qué la canción 'Estrellita, ¿dónde estás?' es útil para aprender intervalos? ¿Qué intervalo tiene al inicio?",
+      a: "Porque las primeras dos notas (Es-tre-LLI-ta) forman una QUINTA JUSTA ascendente. 🌟 Cada intervalo tiene una canción para recordarlo: 2da Mayor = 'Cumpleaños feliz', 3ra menor = 'Hey Jude'."
+    },
+    {
+      points: 500,
+      q: "DOBLE o NADA 🔥 Completa la frase del taller y explica qué significa: 'La música es el ________, no el ________.'",
+      a: "¡'La música es el VEHÍCULO, no el DESTINO'! 🚀 Significa que el taller no busca hacer músicos profesionales — usa la música como MEDIO para el desarrollo personal: expresión emocional, trabajo en equipo, confianza, y descubrirte a ti mismo."
+    }
+  ]
+};
+
+// ==========================================
+// GAME LOGIC
+// ==========================================
+var scores = [0, 0, 0, 0];
+var currentQ = null;
+
+function buildBoard() {
+  var board = document.getElementById('board');
+  board.innerHTML = '';
+  
+  // Categories
+  categories.forEach(function(cat, i) {
+    var div = document.createElement('div');
+    div.className = 'category';
+    div.textContent = cat;
+    div.style.borderColor = catColors[i];
+    board.appendChild(div);
+  });
+  
+  // Question cells (5 rows)
+  for (var row = 0; row < 5; row++) {
+    categories.forEach(function(cat, col) {
+      var q = questions[cat][row];
+      var cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = '$' + q.points;
+      cell.dataset.cat = col;
+      cell.dataset.row = row;
+      cell.onclick = function() { openQuestion(this); };
+      board.appendChild(cell);
+    });
+  }
+}
+
+function openQuestion(cell) {
+  if (cell.classList.contains('used')) return;
+  var cat = parseInt(cell.dataset.cat);
+  var row = parseInt(cell.dataset.row);
+  var q = questions[categories[cat]][row];
+  currentQ = { cell: cell, points: q.points };
+  
+  var modal = document.getElementById('modal');
+  modal.style.borderColor = catColors[cat];
+  document.getElementById('modalCat').textContent = categories[cat];
+  document.getElementById('modalPoints').textContent = '$' + q.points;
+  document.getElementById('modalPoints').style.color = catColors[cat];
+  document.getElementById('modalQuestion').textContent = q.q;
+  document.getElementById('modalAnswer').textContent = q.a;
+  document.getElementById('modalAnswer').className = 'modal-answer';
+  document.getElementById('modalBtns').innerHTML = '<button class="btn btn-reveal" onclick="revealAnswer()">🎵 Revelar Respuesta</button>';
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function revealAnswer() {
+  document.getElementById('modalAnswer').classList.add('visible');
+  document.getElementById('modalAnswer').style.background = 'rgba(46, 196, 160, 0.15)';
+  document.getElementById('modalAnswer').style.color = '#2EC4A0';
+  
+  var btns = '<div style="margin-top:10px;">';
+  btns += '<button class="btn btn-close" onclick="closeModal()">Cerrar</button>';
+  btns += '</div>';
+  document.getElementById('modalBtns').innerHTML = btns;
+  
+  currentQ.cell.classList.add('used');
+  currentQ.cell.textContent = '✓';
+  currentQ.cell.style.color = 'rgba(255,255,255,0.2)';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  currentQ = null;
+}
+
+function adjustScore(team, amount) {
+  scores[team] += amount;
+  document.getElementById('score-' + team).textContent = scores[team];
+  if (amount > 0) miniConfetti();
+}
+
+function renameTeam(idx) {
+  var current = document.querySelectorAll('.team-name')[idx].textContent;
+  var newName = prompt('Nombre del equipo:', current);
+  if (newName && newName.trim()) {
+    document.querySelectorAll('.team-name')[idx].textContent = newName.trim();
+  }
+}
+
+function miniConfetti() {
+  var colors = ['#E8614D', '#2EC4A0', '#FFB627', '#7C5CFC', '#FF2D78'];
+  for (var i = 0; i < 15; i++) {
+    var piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = (Math.random() * 100) + 'vw';
+    piece.style.top = '-10px';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDelay = (Math.random() * 0.5) + 's';
+    piece.style.animationDuration = (1.5 + Math.random()) + 's';
+    document.body.appendChild(piece);
+    setTimeout(function(p) { p.remove(); }.bind(null, piece), 3000);
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+// Build the board!
+buildBoard();
+</script>
+</body>
+</html>
