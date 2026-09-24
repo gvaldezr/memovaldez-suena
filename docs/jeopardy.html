@@ -69,6 +69,8 @@ body {
 .team:nth-child(2) .team-score { color: var(--mint); }
 .team:nth-child(3) .team-score { color: var(--gold); }
 .team:nth-child(4) .team-score { color: var(--purple); }
+.team:nth-child(5) .team-score { color: var(--mint); }
+.team:nth-child(6) .team-score { color: var(--pink); }
 .score-btns { margin-top: 6px; display: flex; gap: 6px; justify-content: center; }
 .score-btns button {
   background: rgba(255,255,255,0.1);
@@ -265,6 +267,22 @@ body {
     <div class="score-btns">
       <button onclick="adjustScore(3, -100)">−</button>
       <button onclick="adjustScore(3, 100)">+</button>
+    </div>
+  </div>
+  <div class="team">
+    <div class="team-name" onclick="renameTeam(4)">🎵 Equipo 5</div>
+    <div class="team-score" id="score-4">0</div>
+    <div class="score-btns">
+      <button onclick="adjustScore(4, -100)">−</button>
+      <button onclick="adjustScore(4, 100)">+</button>
+    </div>
+  </div>
+  <div class="team">
+    <div class="team-name" onclick="renameTeam(5)">🎶 Equipo 6</div>
+    <div class="team-score" id="score-5">0</div>
+    <div class="score-btns">
+      <button onclick="adjustScore(5, -100)">−</button>
+      <button onclick="adjustScore(5, 100)">+</button>
     </div>
   </div>
 </div>
@@ -466,7 +484,7 @@ var questions = {
 // ==========================================
 // GAME LOGIC
 // ==========================================
-var scores = [0, 0, 0, 0];
+var scores = [0, 0, 0, 0, 0, 0];
 var currentQ = null;
 
 function buildBoard() {

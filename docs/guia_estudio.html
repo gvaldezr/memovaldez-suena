@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎵 Suena — Guía de Estudio Jeopardy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral: #E8614D;
+  --blue: #2D3A4A;
+  --mint: #2EC4A0;
+  --gold: #FFB627;
+  --purple: #7C5CFC;
+  --pink: #FF2D78;
+  --bg: #0a0a1a;
+  --surface: #141428;
+  --surface2: #1c1c3a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: #eee;
+  min-height: 100vh;
+}
+
+/* NAV */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,26,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px;
+  overflow-x: auto;
+}
+.topnav h1 { font-size: 1.1em; font-weight: 900; white-space: nowrap;
+  background: linear-gradient(90deg, var(--coral), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tab {
+  padding: 6px 14px; border-radius: 20px; font-size: 0.8em; font-weight: 700;
+  cursor: pointer; white-space: nowrap; transition: all 0.3s;
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+  border: 1px solid transparent;
+}
+.tab:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.tab.active { color: #fff; border-color: currentColor; }
+
+/* SLIDES CONTAINER */
+.slides-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+.category-section { display: none; }
+.category-section.active { display: block; }
+
+.category-header {
+  text-align: center; padding: 30px 20px 20px;
+}
+.category-header h2 {
+  font-size: 2em; font-weight: 900; margin-bottom: 8px;
+}
+.category-header p { opacity: 0.5; font-size: 0.95em; }
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all 0.3s;
+  border-left: 4px solid;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+
+.card-header {
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  user-select: none;
+}
+.card-number {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 0.85em; flex-shrink: 0;
+}
+.card-question { font-weight: 700; font-size: 1.05em; line-height: 1.4; flex: 1; }
+.card-chevron {
+  font-size: 1.2em; transition: transform 0.3s; opacity: 0.4; flex-shrink: 0;
+}
+.card.open .card-chevron { transform: rotate(90deg); opacity: 0.8; }
+
+.card-body {
+  max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+}
+.card.open .card-body { max-height: 600px; }
+
+.card-content {
+  padding: 0 24px 24px;
+}
+
+.answer-box {
+  border-radius: 12px; padding: 16px 20px; margin-bottom: 12px;
+}
+.answer-box h4 {
+  font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 8px; opacity: 0.7;
+}
+.answer-box p { font-size: 1em; line-height: 1.6; font-weight: 600; }
+
+.key-concept {
+  background: rgba(255,255,255,0.04); border-radius: 10px;
+  padding: 12px 16px; margin-top: 10px;
+}
+.key-concept strong { font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; display: block; margin-bottom: 4px; }
+.key-concept span { font-size: 0.9em; line-height: 1.5; opacity: 0.85; }
+
+/* CATEGORY COLORS */
+.cat-0 .card { border-left-color: var(--coral); }
+.cat-0 .card-number { background: rgba(232,97,77,0.15); color: var(--coral); }
+.cat-0 .answer-box { background: rgba(232,97,77,0.08); }
+.cat-0 .tab.active { color: var(--coral); }
+.cat-0 .category-header h2 { color: var(--coral); }
+
+.cat-1 .card { border-left-color: var(--mint); }
+.cat-1 .card-number { background: rgba(46,196,160,0.15); color: var(--mint); }
+.cat-1 .answer-box { background: rgba(46,196,160,0.08); }
+.cat-1 .tab.active { color: var(--mint); }
+.cat-1 .category-header h2 { color: var(--mint); }
+
+.cat-2 .card { border-left-color: var(--gold); }
+.cat-2 .card-number { background: rgba(255,182,39,0.15); color: var(--gold); }
+.cat-2 .answer-box { background: rgba(255,182,39,0.08); }
+.cat-2 .tab.active { color: var(--gold); }
+.cat-2 .category-header h2 { color: var(--gold); }
+
+.cat-3 .card { border-left-color: var(--purple); }
+.cat-3 .card-number { background: rgba(124,92,252,0.15); color: var(--purple); }
+.cat-3 .answer-box { background: rgba(124,92,252,0.08); }
+.cat-3 .tab.active { color: var(--purple); }
+.cat-3 .category-header h2 { color: var(--purple); }
+
+.cat-4 .card { border-left-color: var(--pink); }
+.cat-4 .card-number { background: rgba(255,45,120,0.15); color: var(--pink); }
+.cat-4 .answer-box { background: rgba(255,45,120,0.08); }
+.cat-4 .tab.active { color: var(--pink); }
+.cat-4 .category-header h2 { color: var(--pink); }
+
+.cat-5 .card { border-left-color: var(--coral); }
+.cat-5 .card-number { background: rgba(232,97,77,0.15); color: var(--coral); }
+.cat-5 .answer-box { background: rgba(232,97,77,0.08); }
+.cat-5 .tab.active { color: var(--coral); }
+.cat-5 .category-header h2 { color: var(--coral); }
+
+/* ALL VIEW */
+.all-view .category-section { display: block; margin-bottom: 40px; }
+
+/* FOOTER */
+.footer {
+  text-align: center; padding: 40px 20px 30px;
+  opacity: 0.3; font-size: 0.85em;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .topnav { gap: 6px; padding: 10px 12px; }
+  .tab { font-size: 0.7em; padding: 5px 10px; }
+  .card-header { padding: 16px; gap: 10px; }
+  .card-content { padding: 0 16px 16px; }
+  .category-header h2 { font-size: 1.5em; }
+}
+
+/* PRINT */
+@media print {
+  .topnav { display: none; }
+  .category-section { display: block !important; page-break-inside: avoid; }
+  .card-body { max-height: none !important; }
+  .card { break-inside: avoid; }
+  body { background: #fff; color: #000; }
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <h1>🎵 Suena</h1>
+  <div class="tab active" data-cat="all" onclick="showCat('all')">📋 Todo</div>
+  <div class="tab" data-cat="0" onclick="showCat('0')">🎵 Ritmo</div>
+  <div class="tab" data-cat="1" onclick="showCat('1')">🎤 Voz</div>
+  <div class="tab" data-cat="2" onclick="showCat('2')">🎸 Instrumentos</div>
+  <div class="tab" data-cat="3" onclick="showCat('3')">🎶 Armonía</div>
+  <div class="tab" data-cat="4" onclick="showCat('4')">✨ Creatividad</div>
+  <div class="tab" data-cat="5" onclick="showCat('5')">🧠 Datos</div>
+</nav>
+
+<div class="slides-container" id="content"></div>
+
+<div class="footer">🎵 Suena — Tu Espacio Musical · Taller de Música · Bachillerato UADY</div>
+
+<script>
+var data = [
+  {
+    cat: "🎵 Ritmo y Pulso",
+    desc: "Los fundamentos que hacen que la música se mueva",
+    cards: [
+      {
+        q: "¿Qué es el pulso?",
+        a: "El latido CONSTANTE de la música — como el tic-tac de un reloj o los latidos de tu corazón.",
+        detail: "Es lo que te hace mover el pie automáticamente. No cambia dentro de una canción. Se mide en BPM (beats per minute): Adele ~68 BPM, The Weeknd ~171 BPM."
+      },
+      {
+        q: "¿Qué son las sílabas Kodály?",
+        a: "Un sistema para leer ritmos con sílabas: TA (negra), TI-TI (corcheas), SH (silencio), TA-A (blanca).",
+        detail: "Creado por Zoltán Kodály (Hungría). Cada figura rítmica tiene su sílaba: negra = TA, dos corcheas = TI-TI, silencio = SH, blanca = TA-A, redonda = TA-A-A-A."
+      },
+      {
+        q: "Pulso vs Ritmo: ¿cuál es la diferencia?",
+        a: "El PULSO es constante (no cambia). El RITMO son los patrones de sonidos largos, cortos y silencios ENCIMA del pulso.",
+        detail: "Analogía: el pulso es el latido del corazón (constante); el ritmo es lo que bailas (variable). Dos canciones pueden tener el mismo pulso pero ritmos completamente diferentes."
+      },
+      {
+        q: "¿Qué son los BPM?",
+        a: "Beats Per Minute — cuántos pulsos hay en un minuto. Determina la velocidad (tempo) de la música.",
+        detail: "120 BPM = 2 pulsos por segundo. Adagio (~60-70 BPM) = lento. Allegro (~120-140 BPM) = rápido. Presto (~170+ BPM) = muy rápido."
+      },
+      {
+        q: "¿Por qué el silencio es importante en la música?",
+        a: "Debussy: 'La música es el espacio entre las notas.' Sin silencios, la música sería solo ruido constante.",
+        detail: "El silencio crea tensión, expectativa y respiración. En Kodály se representa como SH. Es tan musical como cualquier nota — un buen músico sabe CUÁNDO no tocar."
+      }
+    ]
+  },
+  {
+    cat: "🎤 Nuestra Voz",
+    desc: "Tu instrumento más personal — ya lo tienes",
+    cards: [
+      {
+        q: "¿Qué es el diafragma y por qué importa?",
+        a: "El músculo debajo de los pulmones que controla la respiración. Respirar 'con la panza' = respiración diafragmática.",
+        detail: "Al inhalar, el diafragma baja y los pulmones se expanden. Esto da más aire y control al cantar. Los cantantes profesionales respiran con el diafragma, no con el pecho."
+      },
+      {
+        q: "¿Qué significa cantar al unísono?",
+        a: "TODOS cantan la MISMA melodía al MISMO tiempo. Uni = uno, sono = sonido.",
+        detail: "Es el punto de partida de todo coro. Antes de dividirse en voces, el grupo aprende a sonar como uno solo. Si no puedes cantar al unísono, no puedes cantar a 2 voces."
+      },
+      {
+        q: "¿Qué es la muda de voz?",
+        a: "El proceso en la adolescencia donde las cuerdas vocales crecen y la voz cambia — en hombres baja hasta una octava.",
+        detail: "Es 100% normal. En hombres es más notorio (gallos, quiebres). En mujeres es más sutil. NO significa que cantas mal. Dura entre 6 meses y 2 años. Hay que cuidar la voz durante este período."
+      },
+      {
+        q: "¿Qué es un canon?",
+        a: "El mismo grupo canta la MISMA melodía pero empezando en DIFERENTES momentos — como un eco organizado.",
+        detail: "Ejemplo clásico: 'Martinillo' (Frère Jacques). Un grupo empieza y el otro entra después. Es la forma más simple de cantar a varias voces porque todos cantan lo mismo."
+      },
+      {
+        q: "¿Qué pasa en tu cuerpo cuando cantas en coro?",
+        a: "Se libera OXITOCINA (hormona del vínculo), se sincronizan los latidos cardíacos del grupo, y baja el cortisol (estrés).",
+        detail: "Estudios científicos demuestran que cantar juntos tiene beneficios fisiológicos reales: reduce ansiedad, mejora el sistema inmune, y crea una sensación de pertenencia que no se logra de otra forma."
+      }
+    ]
+  },
+  {
+    cat: "🎸 Instrumentos",
+    desc: "Cada instrumento tiene su personalidad",
+    cards: [
+      {
+        q: "¿Cómo se afinan las 6 cuerdas de la guitarra?",
+        a: "MI-LA-RE-SOL-SI-MI (E-A-D-G-B-E) de grave a aguda.",
+        detail: "Truco: 'Eduardo Ama Dar Guitarra Buena y Espléndida'. Los primeros 4 acordes que aprendes: G, Em, C, D — con estos ya puedes tocar muchas canciones."
+      },
+      {
+        q: "¿Cómo encuentras la nota DO en el piano?",
+        a: "DO siempre está justo A LA IZQUIERDA del grupo de 2 teclas negras.",
+        detail: "Las teclas negras se agrupan en patrones de 2 y 3. Ese patrón se repite por todo el teclado. Una vez que encuentras DO, cuentas: DO-RE-MI-FA-SOL-LA-SI hacia la derecha."
+      },
+      {
+        q: "¿Por qué el bajo es 'el corazón del ensamble'?",
+        a: "Porque es el PUENTE entre la sección rítmica (batería) y la armónica (guitarra/piano).",
+        detail: "El bajo define qué acorde se escucha (toca la nota fundamental) y al mismo tiempo marca el groove rítmico. Si el bajo falla, todo el ensamble se desmorona."
+      },
+      {
+        q: "¿Qué percusiones latinas tenemos en el aula?",
+        a: "Bongós, cajón, claves, maracas, güiro, congas y percusiones menores.",
+        detail: "La base de la percusión latina es el patrón de CLAVE 3-2: tres golpes + dos golpes en un ciclo. Es el ADN rítmico de la salsa, cumbia, son y música tropical."
+      },
+      {
+        q: "¿Qué es la percusión corporal?",
+        a: "Hacer ritmo usando tu propio cuerpo: PALMAS, MUSLOS, PECHO, PIES y CHASQUIDOS.",
+        detail: "Los 5 sonidos: clap (palmas), slap (muslos), thump (pecho), stomp (pies), snap (chasquidos). No necesitas instrumento para hacer música — tu cuerpo YA ES uno."
+      }
+    ]
+  },
+  {
+    cat: "🎶 Armonía",
+    desc: "Por qué las canciones suenan como suenan",
+    cards: [
+      {
+        q: "Mayor vs Menor: ¿cuál es la diferencia?",
+        a: "Mayor = suena 'alegre/brillante'. Menor = suena 'triste/melancólico'. La diferencia es UNA sola nota (la tercera).",
+        detail: "Técnicamente: en el acorde menor, la tercera está medio tono más abajo que en el mayor. Eso cambia completamente la emoción. Do mayor (C): DO-MI-SOL. Do menor (Cm): DO-MI♭-SOL."
+      },
+      {
+        q: "¿Cuáles son los 4 acordes mágicos?",
+        a: "I-V-vi-IV → En Do: DO, SOL, LA menor, FA (C-G-Am-F). Con estos tocas CIENTOS de canciones pop.",
+        detail: "Los usan: 'Someone Like You' (Adele), 'Let It Be' (Beatles), 'Nada' (Zoé), 'With or Without You' (U2), y literalmente cientos más. ¡Pon cualquier canción pop y probablemente tenga estos 4!"
+      },
+      {
+        q: "¿Qué es una progresión armónica?",
+        a: "Una secuencia de acordes que se REPITE. Si los acordes son ESTACIONES, la progresión es la RUTA DEL TREN.",
+        detail: "Siempre pasa por las mismas estaciones en el mismo orden. Cada ruta = un lugar emocional diferente. La mayoría del pop usa una de ~4 progresiones conocidas."
+      },
+      {
+        q: "¿Cuáles son las 3 funciones tonales?",
+        a: "TÓNICA (I) = casa/descanso. SUBDOMINANTE (IV) = movimiento. DOMINANTE (V) = tensión que necesita resolver.",
+        detail: "Es el ciclo emocional de la música: estás en casa (I) → quieres ir a algún lado (IV) → la tensión crece (V) → vuelves a casa (I). Casi toda la música occidental funciona así."
+      },
+      {
+        q: "¿Qué es un arreglo musical?",
+        a: "Decidir CÓMO suena una canción con TU grupo. Las 6 preguntas: ¿tonalidad? ¿melodía? ¿armonía? ¿ritmo? ¿instrumentos? ¿dinámicas?",
+        detail: "Un arreglo es como cocinar: la receta (canción original) existe, pero TÚ decides si le pones más chile 🌶️. Puedes cambiar tonalidad, simplificar partes, agregar intro/outro, cambiar de género."
+      }
+    ]
+  },
+  {
+    cat: "✨ Creatividad",
+    desc: "De escuchar música a CREAR música",
+    cards: [
+      {
+        q: "¿Qué es la escala pentatónica?",
+        a: "Una escala de SOLO 5 notas que 'siempre suena bien'. En Do: DO-RE-MI-SOL-LA.",
+        detail: "Es como el 'WiFi de la música' — funciona en casi cualquier contexto. Es la base de la improvisación en blues, rock, pop, y muchas tradiciones musicales del mundo."
+      },
+      {
+        q: "¿Qué es call & response?",
+        a: "Una persona toca/canta una frase (LLAMADA) y otra RESPONDE. Es una conversación musical.",
+        detail: "Es la base del jazz, blues, gospel, y muchas tradiciones africanas y latinas. En el taller lo usamos en jam circles: Memo toca algo, tú respondes con tu versión."
+      },
+      {
+        q: "¿Cuáles son los 6 pasos de la 'Receta de Canción'?",
+        a: "1) Emoción. 2) Frases/ideas. 3) Progresión armónica. 4) Melodía. 5) Letra sobre la melodía. 6) Estructura (verso-coro-puente).",
+        detail: "No necesitas escribir un hit — necesitas escribir ALGO. Tu primera canción no tiene que ser perfecta, solo tiene que existir. Truco pro: usa 'gibberish' primero (sílabas sin sentido) para encontrar la melodía."
+      },
+      {
+        q: "¿Qué es la fusión de géneros?",
+        a: "Tomar elementos de un género y combinarlos con otro. La música más emocionante nace cuando géneros 'incompatibles' se encuentran.",
+        detail: "Ejemplos: Café Tacvba (rock + son jarocho), Natalia Lafourcade (indie + tradicional mexicana), Rosalía (flamenco + electrónica). En Yucatán: trova + pop, jarana + rock."
+      },
+      {
+        q: "¿Qué es el scat singing?",
+        a: "Improvisar vocalmente usando SÍLABAS SIN SIGNIFICADO: du-bi-du-ba-da-ski-bi...",
+        detail: "Maestros legendarios: Ella Fitzgerald, Louis Armstrong, Bobby McFerrin ('Don't Worry Be Happy'). No necesitas saber la letra ni la teoría — solo dejarte llevar con sonidos."
+      }
+    ]
+  },
+  {
+    cat: "🧠 Datos Curiosos",
+    desc: "Lo que hace a la música fascinante",
+    cards: [
+      {
+        q: "¿Cuántas notas existen en toda la música?",
+        a: "SOLO 12: 7 naturales (Do Re Mi Fa Sol La Si) + 5 alteradas (sostenidos/bemoles).",
+        detail: "Toda la música que existe — de Bach a Bad Bunny — usa solo estas 12 notas en diferentes combinaciones, octavas y ritmos. Es como tener solo 12 colores y pintar TODO."
+      },
+      {
+        q: "¿Qué es una bomba yucateca?",
+        a: "Una copla rimada (décima) que se GRITA en medio de una jarana. Tradición musical de Yucatán.",
+        detail: "Ejemplo: '¡Bomba! En Mérida yo nací, cantando me bauticé, y con música crecí, ¡y con música me iré!' Es humor, identidad y música en un solo momento."
+      },
+      {
+        q: "¿Qué descubrió Pitágoras sobre la 5ta justa?",
+        a: "Que la frecuencia de la 5ta justa es exactamente 1.5 veces (proporción 3:2) la nota base.",
+        detail: "Hace 2,500 años, con cuerdas, descubrió que las proporciones matemáticas simples producen los intervalos que suenan más 'perfectos'. La música es matemáticas hermosas."
+      },
+      {
+        q: "¿Cómo recordar intervalos con canciones?",
+        a: "'Estrellita' = 5ta justa. 'Cumpleaños feliz' = 2da mayor. 'Hey Jude' = 3ra menor.",
+        detail: "Cada intervalo tiene una canción famosa cuyas primeras notas lo forman. Es el truco que usan los músicos profesionales para identificar intervalos de oído."
+      },
+      {
+        q: "🔥 ¿Cuál es la filosofía del taller?",
+        a: "'La música es el VEHÍCULO, no el DESTINO.' No buscamos hacer músicos profesionales — usamos la música para el desarrollo personal.",
+        detail: "Expresión emocional, trabajo en equipo, confianza, descubrirte a ti mismo. Independientemente de tu nivel técnico al final del taller, lo que importa es lo que descubriste sobre ti."
+      }
+    ]
+  }
+];
+
+// BUILD
+function build() {
+  var container = document.getElementById('content');
+  container.innerHTML = '';
+  
+  data.forEach(function(cat, ci) {
+    var section = document.createElement('div');
+    section.className = 'category-section cat-' + ci;
+    section.dataset.cat = ci;
+    
+    var header = '<div class="category-header">' +
+      '<h2>' + cat.cat + '</h2>' +
+      '<p>' + cat.desc + '</p></div>';
+    
+    var cards = '';
+    cat.cards.forEach(function(card, idx) {
+      cards += '<div class="card" onclick="toggleCard(this)">' +
+        '<div class="card-header">' +
+          '<div class="card-number">' + (idx + 1) + '</div>' +
+          '<div class="card-question">' + card.q + '</div>' +
+          '<div class="card-chevron">▸</div>' +
+        '</div>' +
+        '<div class="card-body"><div class="card-content">' +
+          '<div class="answer-box"><h4>Respuesta</h4><p>' + card.a + '</p></div>' +
+          '<div class="key-concept"><strong>Concepto clave</strong><span>' + card.detail + '</span></div>' +
+        '</div></div></div>';
+    });
+    
+    section.innerHTML = header + cards;
+    container.appendChild(section);
+  });
+}
+
+function toggleCard(card) {
+  card.classList.toggle('open');
+}
+
+function showCat(cat) {
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelector('.tab[data-cat="' + cat + '"]').classList.add('active');
+  
+  var container = document.getElementById('content');
+  
+  if (cat === 'all') {
+    container.classList.add('all-view');
+    document.querySelectorAll('.category-section').forEach(function(s) { s.style.display = ''; });
+  } else {
+    container.classList.remove('all-view');
+    document.querySelectorAll('.category-section').forEach(function(s) {
+      s.style.display = s.dataset.cat === cat ? 'block' : 'none';
+    });
+  }
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+build();
+showCat('all');
+</script>
+</body>
+</html>
